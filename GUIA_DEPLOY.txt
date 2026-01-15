@@ -1,0 +1,264 @@
+═══════════════════════════════════════════════════════════════════════════
+  🚀 GUÍA COMPLETA: SUBIR A GITHUB Y DESPLEGAR EN RAILWAY
+═══════════════════════════════════════════════════════════════════════════
+
+
+📋 PARTE 1: SUBIR A GITHUB
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PASO 1: Preparar el proyecto local
+────────────────────────────────────────────────────────────────────────────
+✅ Ya está listo! Los archivos necesarios ya fueron creados:
+   - Procfile (para Railway)
+   - runtime.txt (versión de Python)
+   - railway.json (configuración Railway)
+   - requirements.txt (dependencias actualizadas)
+   - .gitignore (archivos a ignorar)
+
+
+PASO 2: Inicializar Git en tu proyecto
+────────────────────────────────────────────────────────────────────────────
+Abre una terminal (CMD o PowerShell) en la carpeta del proyecto:
+
+cd "c:\Users\yanet\Downloads\proyecto-simulacion-ml-main"
+
+Ejecuta los siguientes comandos:
+
+git init
+git add .
+git commit -m "Initial commit: Notebook Viewer con interfaz moderna"
+
+
+PASO 3: Conectar con tu repositorio de GitHub
+────────────────────────────────────────────────────────────────────────────
+Ejecuta estos comandos (reemplaza con tu información):
+
+git remote add origin https://github.com/Yeni1289/simulacion_5-6_version-2.git
+git branch -M main
+git push -u origin main
+
+Si te pide credenciales:
+- Usuario: Yeni1289
+- Contraseña: Usa un Personal Access Token (no tu contraseña de GitHub)
+
+Para crear un Personal Access Token:
+1. Ve a GitHub.com → Settings → Developer settings → Personal access tokens
+2. Click "Generate new token (classic)"
+3. Selecciona los permisos: repo (todos)
+4. Copia el token generado (guárdalo en un lugar seguro)
+
+
+PASO 4: Verificar que se subió correctamente
+────────────────────────────────────────────────────────────────────────────
+Ve a: https://github.com/Yeni1289/simulacion_5-6_version-2
+Deberías ver todos tus archivos.
+
+
+═══════════════════════════════════════════════════════════════════════════
+📋 PARTE 2: DESPLEGAR EN RAILWAY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PASO 1: Crear cuenta en Railway (si no tienes)
+────────────────────────────────────────────────────────────────────────────
+1. Ve a: https://railway.app
+2. Click en "Start a New Project" o "Login"
+3. Inicia sesión con tu cuenta de GitHub (recomendado)
+
+
+PASO 2: Crear nuevo proyecto
+────────────────────────────────────────────────────────────────────────────
+1. Click en "New Project"
+2. Selecciona "Deploy from GitHub repo"
+3. Autoriza Railway para acceder a tus repositorios de GitHub
+4. Busca y selecciona: "simulacion_5-6_version-2"
+5. Click en "Deploy Now"
+
+
+PASO 3: Configurar variables de entorno (OPCIONAL pero recomendado)
+────────────────────────────────────────────────────────────────────────────
+1. En el dashboard de Railway, click en tu proyecto
+2. Ve a "Variables"
+3. Agrega estas variables:
+
+   Variable: SECRET_KEY
+   Valor: [genera una clave aleatoria, ejemplo: tu-clave-super-secreta-123456]
+
+   Variable: DEBUG
+   Valor: False
+
+   Variable: ALLOWED_HOSTS
+   Valor: .railway.app
+
+4. Click "Add" para cada variable
+
+
+PASO 4: Esperar el despliegue
+────────────────────────────────────────────────────────────────────────────
+Railway detectará automáticamente:
+✅ runtime.txt → Usará Python 3.12.2
+✅ requirements.txt → Instalará Django, nbformat, etc.
+✅ Procfile → Ejecutará gunicorn
+✅ railway.json → Configuración personalizada
+
+El proceso toma 2-5 minutos.
+
+Verás el progreso en tiempo real:
+- Building...
+- Deploying...
+- Success! ✓
+
+
+PASO 5: Obtener la URL de tu aplicación
+────────────────────────────────────────────────────────────────────────────
+1. Una vez desplegado, ve a "Settings"
+2. En "Domains", verás tu URL pública
+3. Se verá algo como: https://tu-proyecto.railway.app
+4. Click en "Generate Domain" si no hay ninguna
+
+
+PASO 6: Probar la aplicación
+────────────────────────────────────────────────────────────────────────────
+1. Abre la URL en tu navegador
+2. Deberías ver la pantalla de carga de datasets
+3. ¡Listo! Tu aplicación está en línea
+
+
+═══════════════════════════════════════════════════════════════════════════
+🔧 COMANDOS RÁPIDOS (COPIAR Y PEGAR)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Navegar a la carpeta del proyecto
+cd "c:\Users\yanet\Downloads\proyecto-simulacion-ml-main"
+
+# Inicializar Git
+git init
+
+# Agregar todos los archivos
+git add .
+
+# Hacer commit
+git commit -m "Initial commit: Notebook Viewer con interfaz moderna"
+
+# Conectar con GitHub
+git remote add origin https://github.com/Yeni1289/simulacion_5-6_version-2.git
+
+# Cambiar a rama main
+git branch -M main
+
+# Subir a GitHub
+git push -u origin main
+
+
+═══════════════════════════════════════════════════════════════════════════
+⚠️ SOLUCIÓN DE PROBLEMAS COMUNES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ PROBLEMA: "git: command not found"
+────────────────────────────────────────────────────────────────────────────
+SOLUCIÓN: Instala Git
+1. Descarga: https://git-scm.com/download/win
+2. Instala con las opciones por defecto
+3. Reinicia la terminal
+
+
+❌ PROBLEMA: "fatal: remote origin already exists"
+────────────────────────────────────────────────────────────────────────────
+SOLUCIÓN: Elimina el remoto existente
+git remote remove origin
+git remote add origin https://github.com/Yeni1289/simulacion_5-6_version-2.git
+
+
+❌ PROBLEMA: "Permission denied" al hacer push
+────────────────────────────────────────────────────────────────────────────
+SOLUCIÓN: Usa un Personal Access Token
+1. Ve a GitHub → Settings → Developer settings → Personal access tokens
+2. Generate new token (classic)
+3. Selecciona: repo (todos los permisos)
+4. Copia el token
+5. Al hacer push, usa el token como contraseña
+
+
+❌ PROBLEMA: Railway no detecta el proyecto
+────────────────────────────────────────────────────────────────────────────
+SOLUCIÓN: Verifica que los archivos estén en la raíz
+- Procfile
+- runtime.txt
+- requirements.txt
+Deben estar en la carpeta principal, no en subcarpetas.
+
+
+❌ PROBLEMA: Error "Application failed to respond" en Railway
+────────────────────────────────────────────────────────────────────────────
+SOLUCIÓN: Verifica las variables de entorno
+1. Agrega ALLOWED_HOSTS=.railway.app
+2. Verifica que SECRET_KEY esté configurada
+3. Revisa los logs en Railway: Settings → Logs
+
+
+❌ PROBLEMA: Archivos estáticos no se cargan en Railway
+────────────────────────────────────────────────────────────────────────────
+SOLUCIÓN: Ya está configurado WhiteNoise
+Verifica que en settings.py esté:
+- 'whitenoise.middleware.WhiteNoiseMiddleware' en MIDDLEWARE
+- STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+
+═══════════════════════════════════════════════════════════════════════════
+📝 NOTAS IMPORTANTES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ Railway es GRATUITO para proyectos pequeños ($5 de crédito mensual)
+✓ Puedes vincular tu tarjeta para obtener más crédito
+✓ La aplicación se "duerme" después de inactividad (plan gratuito)
+✓ El primer acceso puede tardar ~30 segundos en despertar
+✓ Railway hace deploy automático cuando haces push a GitHub
+✓ Puedes ver logs en tiempo real en Railway
+
+
+═══════════════════════════════════════════════════════════════════════════
+🔄 ACTUALIZAR EL CÓDIGO DESPUÉS (PARA FUTUROS CAMBIOS)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Cuando hagas cambios en el código:
+
+# Ver archivos modificados
+git status
+
+# Agregar cambios
+git add .
+
+# Hacer commit
+git commit -m "Descripción de los cambios"
+
+# Subir a GitHub
+git push
+
+Railway detectará automáticamente el push y hará re-deploy.
+
+
+═══════════════════════════════════════════════════════════════════════════
+✅ CHECKLIST FINAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Antes de hacer push a GitHub:
+□ Archivos de configuración creados (Procfile, runtime.txt, railway.json)
+□ .gitignore actualizado
+□ requirements.txt con todas las dependencias
+□ settings.py configurado para producción
+□ README.md actualizado
+
+Después de desplegar en Railway:
+□ URL pública generada
+□ Variables de entorno configuradas
+□ Deploy exitoso (sin errores)
+□ Aplicación accesible desde el navegador
+□ Archivos estáticos se cargan correctamente
+
+
+═══════════════════════════════════════════════════════════════════════════
+
+¡Tu aplicación estará disponible en Internet para que cualquiera pueda verla!
+
+URL final: https://tu-proyecto.railway.app
+
+═══════════════════════════════════════════════════════════════════════════

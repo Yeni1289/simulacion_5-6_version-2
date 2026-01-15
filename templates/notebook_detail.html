@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - Notebook Viewer</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body class="notebook-page">
+    <div class="app-wrapper">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="back-link">
+                    <span class="back-icon">←</span>
+                    <span>Volver</span>
+                </a>
+            </div>
+
+            <div class="sidebar-content">
+                <div class="notebook-meta">
+                    <div class="meta-icon">📊</div>
+                    <h3 class="meta-title">{{ title }}</h3>
+                </div>
+
+                <nav class="sidebar-nav">
+                    <button class="nav-btn active" data-view="overview" onclick="switchView('overview')">
+                        <span class="nav-icon">🏠</span>
+                        <span class="nav-label">Resumen</span>
+                    </button>
+                    <button class="nav-btn" data-view="visualizations" onclick="switchView('visualizations')">
+                        <span class="nav-icon">📊</span>
+                        <span class="nav-label">Visualizaciones</span>
+                        <span class="nav-badge">{{ stats.images }}</span>
+                    </button>
+                    <button class="nav-btn" data-view="data" onclick="switchView('data')">
+                        <span class="nav-icon">📋</span>
+                        <span class="nav-label">Datos</span>
+                        <span class="nav-badge">{{ stats.tables }}</span>
+                    </button>
+                    <button class="nav-btn" data-view="insights" onclick="switchView('insights')">
+                        <span class="nav-icon">💡</span>
+                        <span class="nav-label">Resultados</span>
+                        <span class="nav-badge">{{ stats.outputs }}</span>
+                    </button>
+                </nav>
+
+                <div class="sidebar-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Total Items</span>
+                        <span class="stat-value">{{ stats.total }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Imágenes</span>
+                        <span class="stat-value">{{ stats.images }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Tablas</span>
+                        <span class="stat-value">{{ stats.tables }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="action-btn" onclick="toggleTheme()">
+                    <span>🌙</span> Tema
+                </button>
+                <button class="action-btn" onclick="exportData()">
+                    <span>💾</span> Exportar
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Overview View -->
+            <div class="content-view active" id="view-overview">
+                <div class="view-header">
+                    <h1 class="view-title">{{ title }}</h1>
+                    <p class="view-subtitle">Análisis completo de datos</p>
+                </div>
+
+                {% if description %}
+                <div class="overview-card description-card">
+                    <h3 class="card-title">📝 Descripción</h3>
+                    <div class="card-content">{{ description }}</div>
+                </div>
+                {% endif %}
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">📊</div>
+                        <div class="stat-card-content">
+                            <div class="stat-card-value">{{ stats.images }}</div>
+                            <div class="stat-card-label">Visualizaciones</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">📋</div>
+                        <div class="stat-card-content">
+                            <div class="stat-card-value">{{ stats.tables }}</div>
+                            <div class="stat-card-label">Tablas de Datos</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">💡</div>
+                        <div class="stat-card-content">
+                            <div class="stat-card-value">{{ stats.outputs }}</div>
+                            <div class="stat-card-label">Resultados</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">📈</div>
+                        <div class="stat-card-content">
+                            <div class="stat-card-value">{{ stats.total }}</div>
+                            <div class="stat-card-label">Items Totales</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quick-preview">
+                    <h3 class="section-title">Vista Rápida</h3>
+                    <div class="preview-grid">
+                        {% for item in items %}
+                            {% if item.type == 'image' and forloop.counter <= 4 %}
+                                <div class="preview-item" onclick="switchView('visualizations')">
+                                    <img src="{{ item.content }}" alt="Preview">
+                                    <div class="preview-overlay">Ver más</div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visualizations View -->
+            <div class="content-view" id="view-visualizations">
+                <div class="view-header">
+                    <h1 class="view-title">📊 Visualizaciones</h1>
+                    <p class="view-subtitle">{{ stats.images }} gráficos encontrados</p>
+                </div>
+
+                <div class="viz-gallery">
+                    {% for item in items %}
+                        {% if item.type == 'image' %}
+                            <div class="viz-card" onclick="openLightbox('{{ item.content }}')">
+                                <div class="viz-image">
+                                    <img src="{{ item.content }}" alt="Visualización {{ item.index }}">
+                                    <div class="viz-overlay">
+                                        <span class="zoom-icon">🔍</span>
+                                    </div>
+                                </div>
+                                <div class="viz-footer">
+                                    <span class="viz-label">Gráfico #{{ item.index }}</span>
+                                    <button class="viz-action" onclick="event.stopPropagation(); downloadImage('{{ item.content }}')">
+                                        ⬇️
+                                    </button>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Data View -->
+            <div class="content-view" id="view-data">
+                <div class="view-header">
+                    <h1 class="view-title">📋 Tablas de Datos</h1>
+                    <p class="view-subtitle">{{ stats.tables }} tablas encontradas</p>
+                </div>
+
+                <div class="data-container">
+                    {% for item in items %}
+                        {% if item.type == 'table' %}
+                            <div class="data-card">
+                                <div class="data-header">
+                                    <span class="data-icon">📊</span>
+                                    <span class="data-title">Tabla de Resultados</span>
+                                </div>
+                                <div class="data-content">
+                                    {{ item.content|safe }}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Insights View -->
+            <div class="content-view" id="view-insights">
+                <div class="view-header">
+                    <h1 class="view-title">💡 Resultados Clave</h1>
+                    <p class="view-subtitle">{{ stats.outputs }} outputs importantes</p>
+                </div>
+
+                <div class="insights-container">
+                    {% for item in items %}
+                        {% if item.type == 'output' %}
+                            <div class="insight-card">
+                                <div class="insight-icon">📊</div>
+                                <pre class="insight-content">{{ item.content }}</pre>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% for item in items %}
+                        {% if item.type == 'markdown' %}
+                            <div class="insight-card markdown">
+                                <div class="insight-icon">📝</div>
+                                <div class="insight-content">{{ item.content }}</div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <button class="lightbox-close">✕</button>
+        <img class="lightbox-image" id="lightboxImage" src="" alt="Ampliado">
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script>
+        // View Switching
+        function switchView(viewName) {
+            // Update views
+            document.querySelectorAll('.content-view').forEach(view => {
+                view.classList.remove('active');
+            });
+            document.getElementById('view-' + viewName).classList.add('active');
+
+            // Update nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.nav-btn[data-view="${viewName}"]`).classList.add('active');
+
+            // Save state
+            localStorage.setItem('lastView', viewName);
+        }
+
+        // Lightbox
+        function openLightbox(src) {
+            document.getElementById('lightbox').style.display = 'flex';
+            document.getElementById('lightboxImage').src = src;
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Theme Toggle
+        function toggleTheme() {
+            document.body.classList.toggle('light-theme');
+            const isLight = document.body.classList.contains('light-theme');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            showToast(isLight ? '☀️ Modo claro activado' : '🌙 Modo oscuro activado', 'success');
+        }
+
+        // Export Data
+        function exportData() {
+            const title = '{{ title }}';
+            const data = {
+                title: title,
+                stats: {{ stats|safe }},
+                exported: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${title}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showToast('✓ Datos exportados', 'success');
+        }
+
+        // Download Image
+        function downloadImage(src) {
+            const a = document.createElement('a');
+            a.href = src;
+            a.download = src.split('/').pop();
+            a.click();
+            showToast('✓ Imagen descargada', 'success');
+        }
+
+        // Toast Notifications
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => container.removeChild(toast), 300);
+            }, 3000);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Restore theme
+            const theme = localStorage.getItem('theme');
+            if (theme === 'light') {
+                document.body.classList.add('light-theme');
+            }
+
+            // Restore last view
+            const lastView = localStorage.getItem('lastView');
+            if (lastView) {
+                switchView(lastView);
+            }
+
+            // ESC to close lightbox
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeLightbox();
+            });
+        });
+    </script>
+</body>
+</html>

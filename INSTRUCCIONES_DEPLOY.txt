@@ -1,0 +1,191 @@
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                                                                           ║
+║           🎯 RESUMEN: TODO LISTO PARA GITHUB Y RAILWAY                   ║
+║                                                                           ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+
+📦 ARCHIVOS PREPARADOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ requirements.txt          → Dependencias actualizadas con gunicorn y whitenoise
+✅ Procfile                  → Configuración para Railway (gunicorn)
+✅ runtime.txt               → Python 3.12.2
+✅ railway.json              → Configuración automática de Railway
+✅ .gitignore                → Archivos a ignorar (db, cache, etc.)
+✅ app/settings.py           → Configurado para producción + Railway
+✅ README_NEW.md             → Documentación completa del proyecto
+✅ GUIA_DEPLOY.txt           → Guía detallada paso a paso
+✅ SUBIR_A_GITHUB.bat        → Script automático para subir a GitHub
+
+
+🚀 MÉTODO RÁPIDO (RECOMENDADO)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Doble click en: SUBIR_A_GITHUB.bat
+   
+   El script hará TODO automáticamente:
+   - Inicializa Git
+   - Agrega archivos
+   - Hace commit
+   - Conecta con GitHub
+   - Sube el código
+
+2. Ve a: https://railway.app
+   
+   - Click "New Project"
+   - "Deploy from GitHub repo"
+   - Selecciona: simulacion_5-6_version-2
+   - ¡Listo!
+
+
+📝 MÉTODO MANUAL (SI PREFIERES)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Abre una terminal (CMD) y ejecuta:
+
+cd "c:\Users\yanet\Downloads\proyecto-simulacion-ml-main"
+git init
+git add .
+git commit -m "Initial commit: Notebook Viewer"
+git remote add origin https://github.com/Yeni1289/simulacion_5-6_version-2.git
+git branch -M main
+git push -u origin main
+
+
+⚡ LO QUE RAILWAY HARÁ AUTOMÁTICAMENTE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Detecta runtime.txt       → Usa Python 3.12.2
+2. Lee requirements.txt      → Instala Django, nbformat, gunicorn, etc.
+3. Ejecuta Procfile          → Inicia gunicorn
+4. Aplica railway.json       → Configuración personalizada
+5. Ejecuta migraciones       → python manage.py migrate
+6. Genera URL pública        → https://tu-proyecto.railway.app
+7. ¡Aplicación en línea!     → ✓
+
+
+🔐 IMPORTANTE: CREDENCIALES DE GITHUB
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Al hacer "git push", GitHub pedirá credenciales:
+
+❌ NO uses tu contraseña de GitHub
+✅ USA un Personal Access Token
+
+Cómo obtener el token:
+1. Ve a: https://github.com/settings/tokens
+2. Click "Generate new token (classic)"
+3. Selecciona: ☑ repo (todos)
+4. Click "Generate token"
+5. COPIA el token (solo lo verás una vez)
+6. Úsalo como contraseña al hacer push
+
+
+📊 ARCHIVOS CLAVE EXPLICADOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📄 Procfile
+   web: gunicorn app.wsgi --log-file -
+   → Le dice a Railway cómo iniciar la aplicación
+
+📄 runtime.txt
+   python-3.12.2
+   → Especifica la versión de Python
+
+📄 requirements.txt
+   Django>=4.2,<6.0
+   nbformat>=5.9
+   markdown>=3.4
+   gunicorn>=21.2.0      ← Servidor web para producción
+   whitenoise>=6.6.0     ← Manejo de archivos estáticos
+   → Lista todas las dependencias
+
+📄 railway.json
+   {
+     "build": {"builder": "NIXPACKS"},
+     "deploy": {
+       "startCommand": "python manage.py migrate && gunicorn..."
+     }
+   }
+   → Configuración avanzada de Railway
+
+📄 app/settings.py (modificado)
+   - WhiteNoise para archivos estáticos
+   - Configuración para Railway
+   - Variables de entorno
+   - ALLOWED_HOSTS dinámico
+
+
+✅ CHECKLIST ANTES DE SUBIR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+☑ Git instalado (git --version)
+☑ Conexión a internet estable
+☑ Repositorio GitHub existe: simulacion_5-6_version-2
+☑ Personal Access Token de GitHub listo
+☑ Cuenta en Railway.app creada
+
+
+🎯 DESPUÉS DE DESPLEGAR EN RAILWAY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ URL pública generada (ejemplo: https://tu-proyecto.railway.app)
+✓ Deploy automático activado (cada push a GitHub actualiza Railway)
+✓ Variables de entorno configurables en Railway dashboard
+✓ Logs en tiempo real disponibles
+✓ Reinicio automático si hay errores
+
+
+⚠️ NOTA SOBRE RUTAS DE ARCHIVOS EN PRODUCCIÓN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+En Railway NO podrás usar rutas locales como:
+❌ C:\Users\yanet\Downloads\...
+
+La aplicación funcionará para:
+✅ Notebooks que subas al repositorio (en carpeta /datasets)
+✅ Notebooks que cargues mediante otros métodos en producción
+
+Considera implementar:
+- Upload de archivos mediante formulario
+- Integración con servicios de almacenamiento (S3, etc.)
+- API para cargar notebooks
+
+
+💡 TIPS FINALES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ Railway es gratis para empezar ($5 crédito/mes)
+✓ La app se "duerme" después de inactividad (plan gratuito)
+✓ El primer acceso tras dormir toma ~30 segundos
+✓ Puedes conectar tu tarjeta para más crédito
+✓ Actualizaciones: solo haz "git push" y Railway redespliega automáticamente
+✓ Monitorea el uso en Railway dashboard
+
+
+═══════════════════════════════════════════════════════════════════════════
+
+                    ¡TODO LISTO PARA DESPLEGAR! 🚀
+
+═══════════════════════════════════════════════════════════════════════════
+
+
+SIGUIENTE ACCIÓN:
+
+1. Ejecuta: SUBIR_A_GITHUB.bat
+
+   O manualmente:
+   git init
+   git add .
+   git commit -m "Initial commit"
+   git remote add origin https://github.com/Yeni1289/simulacion_5-6_version-2.git
+   git push -u origin main
+
+2. Ve a: https://railway.app
+   → New Project → Deploy from GitHub → simulacion_5-6_version-2
+
+3. ¡Espera 3-5 minutos y tendrás tu URL pública!
+
+
+═══════════════════════════════════════════════════════════════════════════

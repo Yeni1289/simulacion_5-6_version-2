@@ -1,0 +1,104 @@
+╔══════════════════════════════════════════════════════════════════════════╗
+║                                                                          ║
+║             📊 NOTEBOOK VIEWER - INSTRUCCIONES DE USO                    ║
+║                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+
+🚀 INICIO RÁPIDO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  1️⃣  Primera vez: Ejecuta SETUP.bat
+     (Esto instalará todas las dependencias necesarias)
+
+  2️⃣  Iniciar servidor: Ejecuta INICIAR.bat
+     (El servidor se abrirá en http://localhost:8000)
+
+  3️⃣  Abre tu navegador y ve a: http://localhost:8000
+
+
+📁 USO DE LA APLICACIÓN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  PASO 1: Pantalla de Carga de Dataset
+  ──────────────────────────────────────
+  • Verás una pantalla con animaciones bonitas
+  • Puedes ARRASTRAR una carpeta con notebooks o ESCRIBIR la ruta
+  • Ejemplo de ruta: C:\Users\yanet\OneDrive\Documentos\PROYECTO_SIMULACION_I\notebook_site\datasets
+  • Haz clic en "Buscar Notebooks"
+
+  PASO 2: Lista de Notebooks  
+  ──────────────────────────────────────
+  • Se mostrarán todos los archivos .ipynb encontrados
+  • Haz clic en "Abrir" en cualquier notebook
+
+  PASO 3: Visualización Interactiva
+  ──────────────────────────────────────
+  • Verás el notebook con un diseño moderno y estructurado
+  • Navegación lateral con 4 vistas:
+    ✨ Resumen General
+    📊 Visualizaciones (gráficos e imágenes)
+    📈 Datos (tablas y salidas importantes)
+    💡 Insights (conclusiones)
+  • Haz clic en cualquier imagen para ampliarla
+  • Usa el botón 🌓 para cambiar entre tema oscuro/claro
+
+
+⚙️ REQUISITOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✓ Python 3.x instalado
+  ✓ pip instalado
+  ✓ Conexión a internet (primera vez para instalar dependencias)
+
+
+🛠️ SOLUCIÓN DE PROBLEMAS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ❌ Error al iniciar:
+     → Ejecuta: pip install Django nbformat markdown
+     → Verifica que Python esté en el PATH
+
+  ❌ Error de sesiones:
+     → Ejecuta: python manage.py migrate
+     → Borra db.sqlite3 y vuelve a ejecutar INICIAR.bat
+
+  ❌ Error al cargar notebooks:
+     → Verifica que la ruta de la carpeta sea correcta
+     → Asegúrate de que contiene archivos .ipynb
+
+  ❌ Imágenes no se ven:
+     → Verifica que las imágenes en el notebook usen rutas relativas
+     → O que estén incrustadas en base64
+
+
+📝 NOTAS IMPORTANTES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  • La aplicación NO modifica tus notebooks originales
+  • Solo lee y muestra el contenido
+  • Los datos de sesión se guardan localmente en db.sqlite3
+  • Puedes cerrar el servidor con CTRL+C en la consola
+
+
+🎨 CARACTERÍSTICAS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✨ Interfaz moderna con animaciones fluidas
+  🎯 Navegación intuitiva con sidebar
+  🖼️  Zoom de imágenes con lightbox
+  📊 Visualización organizada en 4 vistas
+  🌓 Tema oscuro/claro
+  📱 Diseño responsivo
+  💾 Función de exportación
+  🎨 Sin aspecto de HTML básico - parece una app profesional
+
+
+═══════════════════════════════════════════════════════════════════════════
+
+  Si tienes problemas, revisa que:
+  1. Python esté correctamente instalado
+  2. La carpeta de notebooks tenga archivos .ipynb
+  3. El servidor esté corriendo (debe decir "Starting development server")
+
+═══════════════════════════════════════════════════════════════════════════

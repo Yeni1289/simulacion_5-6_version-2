@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dataset Loader - Notebook Viewer</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body class="loader-page">
+    <div class="app-container">
+        <!-- Animated Background -->
+        <div class="bg-animation">
+            <div class="blob blob-1"></div>
+            <div class="blob blob-2"></div>
+            <div class="blob blob-3"></div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="loader-content">
+            <div class="loader-header">
+                <div class="app-logo">
+                    <div class="logo-icon">📊</div>
+                    <div class="logo-text">
+                        <h1>Notebook Viewer</h1>
+                        <p>Visualiza tus análisis de forma interactiva</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="loader-card">
+                <div class="card-header">
+                    <h2>Cargar Dataset</h2>
+                    <p>Selecciona la carpeta donde están tus notebooks Jupyter</p>
+                </div>
+
+                <div class="card-body">
+                    <!-- Drop Zone -->
+                    <div class="drop-zone" id="dropZone">
+                        <div class="drop-icon">📁</div>
+                        <h3>Arrastra tu carpeta aquí</h3>
+                        <p>o haz clic para seleccionar</p>
+                        <input type="file" id="folderInput" webkitdirectory directory multiple style="display: none;">
+                    </div>
+
+                    <!-- Path Input -->
+                    <div class="path-input-group">
+                        <div class="input-wrapper">
+                            <span class="input-icon">🗂️</span>
+                            <input 
+                                type="text" 
+                                id="folderPath" 
+                                class="path-input"
+                                placeholder="C:\Users\tu_usuario\datasets"
+                                value="{{ last_path }}"
+                            >
+                            <button class="browse-btn" onclick="openFilePicker()">
+                                Explorar
+                            </button>
+                        </div>
+                        <button class="scan-btn" onclick="scanFolder()" id="scanBtn">
+                            <span class="btn-icon">🔍</span>
+                            <span class="btn-text">Buscar Notebooks</span>
+                        </button>
+                    </div>
+
+                    <!-- Recent Paths -->
+                    {% if last_path %}
+                    <div class="recent-section">
+                        <div class="recent-label">Última ruta usada:</div>
+                        <div class="recent-path" onclick="document.getElementById('folderPath').value='{{ last_path }}'; scanFolder();">
+                            <span class="recent-icon">⏱️</span>
+                            <span class="recent-text">{{ last_path }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results-section" id="resultsSection" style="display: none;">
+                <div class="results-header">
+                    <h3>Notebooks Encontrados</h3>
+                    <span class="results-count" id="resultsCount">0</span>
+                </div>
+                <div class="notebooks-grid" id="notebooksGrid"></div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Procesando...</div>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div id="toastContainer" class="toast-container"></div>
+    </div>
+
+    <script>
+        // CSRF Token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+
+        // Drop Zone Functionality
+        const dropZone = document.getElementById('dropZone');
+        const folderInput = document.getElementById('folderInput');
+
+        dropZone.addEventListener('click', () => folderInput.click());
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('drag-over');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            
+            const items = e.dataTransfer.items;
+            if (items && items.length > 0) {
+                const item = items[0].webkitGetAsEntry();
+                if (item && item.isDirectory) {
+                    document.getElementById('folderPath').value = item.fullPath || item.name;
+                    showToast('Carpeta detectada: ' + item.name, 'success');
+                }
+            }
+        });
+
+        folderInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                const path = e.target.files[0].webkitRelativePath;
+                const folderName = path.split('/')[0];
+                document.getElementById('folderPath').value = folderName;
+                showToast('Carpeta seleccionada: ' + folderName, 'success');
+            }
+        });
+
+        // Scan Folder
+        async function scanFolder() {
+            const path = document.getElementById('folderPath').value.trim();
+            
+            console.log('📁 Ruta ingresada:', path);
+            
+            if (!path) {
+                showToast('Por favor ingresa una ruta', 'error');
+                return;
+            }
+
+            showLoading(true);
+
+            try {
+                const formData = new FormData();
+                formData.append('folder_path', path);
+
+                console.log('📤 Enviando petición a /api/scan-folder/');
+                
+                const response = await fetch('/api/scan-folder/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken,
+                    },
+                    body: formData
+                });
+
+                console.log('📥 Respuesta recibida:', response.status);
+                
+                const data = await response.json();
+                console.log('📊 Datos:', data);
+
+                if (data.success) {
+                    console.log(`✅ ${data.notebooks.length} notebooks encontrados`);
+                    displayNotebooks(data.notebooks);
+                    showToast(`✓ ${data.notebooks.length} notebooks encontrados`, 'success');
+                } else {
+                    console.error('❌ Error:', data.error);
+                    showToast('Error: ' + data.error, 'error');
+                }
+            } catch (error) {
+                console.error('❌ Error de conexión:', error);
+                showToast('Error de conexión: ' + error.message, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Display Notebooks
+        function displayNotebooks(notebooks) {
+            const resultsSection = document.getElementById('resultsSection');
+            const notebooksGrid = document.getElementById('notebooksGrid');
+            const resultsCount = document.getElementById('resultsCount');
+
+            resultsSection.style.display = 'block';
+            resultsCount.textContent = notebooks.length;
+            notebooksGrid.innerHTML = '';
+
+            notebooks.forEach(nb => {
+                const card = document.createElement('div');
+                card.className = 'notebook-card';
+                card.innerHTML = `
+                    <div class="notebook-icon">📓</div>
+                    <div class="notebook-info">
+                        <h4>${nb.name}</h4>
+                        <p>${formatFileSize(nb.size)}</p>
+                    </div>
+                    <button class="open-btn" onclick="openNotebook('${escapeHtml(nb.path)}', '${nb.slug}')">
+                        Abrir
+                    </button>
+                `;
+                notebooksGrid.appendChild(card);
+            });
+
+            // Scroll to results
+            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Open Notebook
+        async function openNotebook(path, slug) {
+            showLoading(true, 'Procesando notebook...');
+
+            try {
+                const formData = new FormData();
+                formData.append('notebook_path', path);
+
+                const response = await fetch('/api/process-notebook/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken,
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast(`✓ Notebook procesado: ${data.images_count} imágenes`, 'success');
+                    setTimeout(() => {
+                        window.location.href = `/notebook/${slug}/`;
+                    }, 500);
+                } else {
+                    showToast('Error: ' + data.error, 'error');
+                    showLoading(false);
+                }
+            } catch (error) {
+                showToast('Error: ' + error.message, 'error');
+                showLoading(false);
+            }
+        }
+
+        // Utilities
+        function openFilePicker() {
+            folderInput.click();
+        }
+
+        function showLoading(show, text = 'Procesando...') {
+            const overlay = document.getElementById('loadingOverlay');
+            const loadingText = overlay.querySelector('.loading-text');
+            loadingText.textContent = text;
+            overlay.style.display = show ? 'flex' : 'none';
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => container.removeChild(toast), 300);
+            }, 3000);
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Enter key support
+        document.getElementById('folderPath').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') scanFolder();
+        });
+    </script>
+</body>
+</html>
