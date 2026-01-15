@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación de Resultados</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1e1b4b 0%, #2d1b69 50%, #3f2c70 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 40px 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(147, 112, 219, 0.3);
+            border-radius: 20px;
+            padding: 50px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        .header h1 { font-size: 3.5em; margin-bottom: 15px; font-weight: 900; }
+        .header p { font-size: 1.3em; opacity: 0.8; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .stat-card {
+            background: rgba(147, 112, 219, 0.2);
+            border: 2px solid rgba(147, 112, 219, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            background: rgba(147, 112, 219, 0.3);
+            border-color: rgba(147, 112, 219, 0.6);
+            transform: translateY(-5px);
+        }
+        .stat-value { font-size: 2.5em; font-weight: 900; color: #a78bfa; margin: 10px 0; }
+        .stat-label { font-size: 0.95em; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; }
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        .chart-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(147, 112, 219, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            position: relative;
+            height: 400px;
+        }
+        .chart-title { font-size: 1.3em; font-weight: 700; margin-bottom: 20px; color: #a78bfa; }
+        .chart-canvas { position: relative; height: 320px; }
+        .info-box {
+            background: rgba(147, 112, 219, 0.2);
+            border-left: 4px solid #a78bfa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+        .info-box strong { color: #a78bfa; }
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 40px;
+        }
+        .btn {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            background: rgba(147, 112, 219, 0.3);
+            color: #a78bfa;
+            border: 2px solid rgba(147, 112, 219, 0.5);
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background: rgba(147, 112, 219, 0.5);
+            transform: translateY(-3px);
+            border-color: #a78bfa;
+        }
+        .loading { text-align: center; padding: 100px 20px; }
+        .loading p { font-size: 1.5em; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="loading" class="loading">
+            <h2>🔄 Cargando Dashboard...</h2>
+            <p>Por favor espera</p>
+        </div>
+        <div id="content" style="display: none;">
+            <div class="header">
+                <h1>📊 Evaluación de Resultados</h1>
+                <p>Métricas de rendimiento del modelo</p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">✅ Precisión</div>
+                    <div class="stat-value">97.8%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">🎯 Recall</div>
+                    <div class="stat-value">97.2%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">⭐ F1-Score</div>
+                    <div class="stat-value">0.978</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">📈 AUC-ROC</div>
+                    <div class="stat-value">0.985</div>
+                </div>
+            </div>
+            <div class="charts-grid">
+                <div class="chart-box">
+                    <div class="chart-title">📊 Métrica Global</div>
+                    <div class="chart-canvas"><canvas id="chart1"></canvas></div>
+                </div>
+                <div class="chart-box">
+                    <div class="chart-title">🔲 Matriz de Confusión</div>
+                    <div class="chart-canvas"><canvas id="chart2"></canvas></div>
+                </div>
+                <div class="chart-box">
+                    <div class="chart-title">📉 Curva ROC</div>
+                    <div class="chart-canvas"><canvas id="chart3"></canvas></div>
+                </div>
+                <div class="chart-box">
+                    <div class="chart-title">⚖️ Comparativa Modelos</div>
+                    <div class="chart-canvas"><canvas id="chart4"></canvas></div>
+                </div>
+            </div>
+            <div class="info-box">
+                <strong>ℹ️ Resultado:</strong> El modelo alcanza <strong>97.8%</strong> de precisión general. Detecta correctamente <strong>97.2%</strong> de los ataques con <strong>98.5%</strong> de especificidad. AUC-ROC de <strong>0.985</strong> indica excelente discriminación.
+            </div>
+            <div class="controls">
+                <button class="btn">📄 Reporte</button>
+                <button class="btn">📈 Gráficos</button>
+                <button class="btn">🔍 Análisis</button>
+                <button class="btn">💾 Exportar</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        setTimeout(() => {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+            initCharts();
+        }, 800);
+        function initCharts() {
+            new Chart(document.getElementById('chart1'), {
+                type: 'bar',
+                data: {
+                    labels: ['Accuracy', 'Precision', 'Recall', 'F1-Score', 'Specificity'],
+                    datasets: [{
+                        label: 'Métrica (%)',
+                        data: [97.8, 98.5, 97.2, 97.8, 97.1],
+                        backgroundColor: ['rgba(167, 139, 250, 0.7)', 'rgba(236, 72, 153, 0.7)', 'rgba(59, 130, 246, 0.7)', 'rgba(34, 197, 94, 0.7)', 'rgba(249, 115, 22, 0.7)'],
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { max: 100, grid: { color: 'rgba(167, 139, 250, 0.1)' }, ticks: { color: '#a78bfa' } },
+                        y: { ticks: { color: '#a78bfa' } }
+                    },
+                    plugins: { legend: { labels: { color: '#fff' } } }
+                }
+            });
+
+            new Chart(document.getElementById('chart2'), {
+                type: 'bar',
+                data: {
+                    labels: ['VP', 'FP', 'FN', 'VN'],
+                    datasets: [{
+                        label: 'Cantidad',
+                        data: [18198, 544, 318, 18440],
+                        backgroundColor: ['rgba(34, 197, 94, 0.7)', 'rgba(236, 72, 153, 0.7)', 'rgba(249, 115, 22, 0.7)', 'rgba(59, 130, 246, 0.7)'],
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(167, 139, 250, 0.1)' }, ticks: { color: '#a78bfa' } },
+                        x: { ticks: { color: '#a78bfa' } }
+                    },
+                    plugins: { legend: { labels: { color: '#fff' } } }
+                }
+            });
+
+            new Chart(document.getElementById('chart3'), {
+                type: 'line',
+                data: {
+                    labels: ['0%', '10%', '20%', '30%', '40%', '50%', '60%', '70%', '80%', '90%', '100%'],
+                    datasets: [{
+                        label: 'Curva ROC (AUC=0.985)',
+                        data: [0, 15, 28, 40, 52, 65, 75, 85, 92, 97, 100],
+                        borderColor: '#a78bfa',
+                        backgroundColor: 'rgba(167, 139, 250, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, max: 100, grid: { color: 'rgba(167, 139, 250, 0.1)' }, ticks: { color: '#a78bfa' } },
+                        x: { ticks: { color: '#a78bfa' } }
+                    },
+                    plugins: { legend: { labels: { color: '#fff' } } }
+                }
+            });
+
+            new Chart(document.getElementById('chart4'), {
+                type: 'radar',
+                data: {
+                    labels: ['Accuracy', 'Precision', 'Recall', 'F1-Score', 'AUC-ROC'],
+                    datasets: [
+                        {
+                            label: 'Logistic Regression',
+                            data: [97.8, 98.5, 97.2, 97.8, 98.5],
+                            borderColor: 'rgba(167, 139, 250, 0.8)',
+                            backgroundColor: 'rgba(167, 139, 250, 0.2)',
+                            borderWidth: 2,
+                            pointRadius: 4
+                        },
+                        {
+                            label: 'Random Forest',
+                            data: [98.5, 99.1, 97.8, 98.4, 99.1],
+                            borderColor: 'rgba(34, 197, 94, 0.8)',
+                            backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                            borderWidth: 2,
+                            pointRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { color: '#a78bfa' },
+                            pointLabels: { color: '#a78bfa' }
+                        }
+                    },
+                    plugins: { legend: { labels: { color: '#fff' } } }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notebook Viewer - Simple</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e1b4b 0%, #2d1b69 50%, #3f2c70 100%);
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+        }
+
+        h1 {
+            font-size: 3.5em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #a78bfa 0%, #c4b5fd 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        .description {
+            font-size: 1.1em;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .search-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 30px;
+        }
+
+        .search-label {
+            color: white;
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 16px 20px;
+            font-size: 1.1em;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: white;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #a78bfa;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        input[type="text"]::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        button {
+            padding: 16px 40px;
+            font-size: 1.1em;
+            font-weight: 600;
+            background: #a78bfa;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            background: #8b5cf6;
+        }
+
+        #result {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .result-header {
+            color: white;
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .notebook-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .notebook-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .notebook-item:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: #a78bfa;
+        }
+
+        .notebook-info {
+            flex: 1;
+        }
+
+        .notebook-name {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .notebook-path {
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.5);
+            word-break: break-all;
+        }
+
+        .notebook-item button {
+            padding: 12px 30px;
+            width: auto;
+            background: #a78bfa;
+            font-size: 1em;
+        }
+
+        .notebook-item button:hover {
+            transform: translateY(-2px);
+            background: #8b5cf6;
+        }
+
+        .loading-message,
+        .error-message,
+        .empty-message {
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1.2em;
+            color: white;
+        }
+
+        .loading-message {
+            background: rgba(167, 139, 250, 0.1);
+            border: 1px solid rgba(167, 139, 250, 0.3);
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .empty-message {
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-section">
+            <h1>📊 Notebook Viewer</h1>
+            <p class="description">Sistema de visualización interactiva para análisis de Machine Learning</p>
+        </div>
+
+        <div class="search-box">
+            <label class="search-label">Ingresa la ruta completa de tu carpeta de notebooks:</label>
+            
+            <input 
+                type="text" 
+                id="folderPath" 
+                placeholder="C:\Users\yanet\Downloads\proyecto-simulacion-ml-main\datasets"
+                value="C:\Users\yanet\Downloads\proyecto-simulacion-ml-main\datasets"
+            >
+            
+            <button onclick="buscarNotebooks()">🔍 Buscar Notebooks</button>
+        </div>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        console.log('✅ Página cargada');
+        
+        async function buscarNotebooks() {
+            console.log('🔘 buscarNotebooks() ejecutado');
+            
+            const ruta = document.getElementById('folderPath').value.trim();
+            console.log('📁 Ruta:', ruta);
+            
+            if (!ruta) {
+                alert('❌ Por favor ingresa una ruta');
+                return;
+            }
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<div class="loading-message">⏳ Buscando notebooks...</div>';
+            
+            try {
+                const formData = new FormData();
+                formData.append('folder_path', ruta);
+                
+                console.log('📤 Enviando petición...');
+                
+                const response = await fetch('/api/scan-folder/', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                console.log('📥 Respuesta:', response.status);
+                
+                const data = await response.json();
+                console.log('📊 Datos:', data);
+                
+                if (data.success && data.notebooks.length > 0) {
+                    let html = `<h3 class="result-header">✅ ${data.notebooks.length} notebooks encontrados:</h3><div class="notebook-list">`;
+                    
+                    data.notebooks.forEach(nb => {
+                        html += `
+                            <div class="notebook-item">
+                                <div class="notebook-info">
+                                    <div class="notebook-name">📓 ${nb.name}</div>
+                                    <div class="notebook-path">${nb.path}</div>
+                                </div>
+                                <button onclick="abrirNotebook('${nb.path.replace(/\\/g, '\\\\')}', '${nb.slug}')">
+                                    Abrir
+                                </button>
+                            </div>
+                        `;
+                    });
+                    
+                    html += '</div>';
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.innerHTML = '<div class="empty-message">⚠️ No se encontraron notebooks en esta carpeta</div>';
+                }
+                
+            } catch (error) {
+                console.error('❌ Error:', error);
+                resultDiv.innerHTML = `<div class="error-message">❌ Error: ${error.message}<br><br>Verifica que el servidor esté corriendo.</div>`;
+            }
+        }
+        
+        async function abrirNotebook(ruta, slug) {
+            if (!confirm('¿Abrir este notebook?')) return;
+            
+            try {
+                const formData = new FormData();
+                formData.append('notebook_path', ruta);
+                
+                const response = await fetch('/api/process-notebook/', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    window.location.href = `/notebook/${slug}/`;
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+        
+        // Enter para buscar
+        document.getElementById('folderPath').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                buscarNotebooks();
+            }
+        });
+        
+        console.log('✅ Todo listo');
+    </script>
+</body>
+</html>

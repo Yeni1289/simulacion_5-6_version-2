@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>División del Dataset</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1e1b4b 0%, #2d1b69 50%, #3f2c70 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 40px 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(147, 112, 219, 0.3);
+            border-radius: 20px;
+            padding: 50px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        .header h1 { font-size: 3.5em; margin-bottom: 15px; font-weight: 900; }
+        .header p { font-size: 1.3em; opacity: 0.8; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .stat-card {
+            background: rgba(147, 112, 219, 0.2);
+            border: 2px solid rgba(147, 112, 219, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            background: rgba(147, 112, 219, 0.3);
+            border-color: rgba(147, 112, 219, 0.6);
+            transform: translateY(-5px);
+        }
+        .stat-value { font-size: 2.5em; font-weight: 900; color: #a78bfa; margin: 10px 0; }
+        .stat-label { font-size: 0.95em; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; }
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        .chart-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(147, 112, 219, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            position: relative;
+            height: 400px;
+        }
+        .chart-title { font-size: 1.3em; font-weight: 700; margin-bottom: 20px; color: #a78bfa; }
+        .chart-canvas { position: relative; height: 320px; }
+        .slider-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(147, 112, 219, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .slider-label { font-size: 1.2em; font-weight: 600; margin-bottom: 15px; color: #a78bfa; }
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(147, 112, 219, 0.3);
+            outline: none;
+            margin: 15px 0;
+        }
+        .info-box {
+            background: rgba(147, 112, 219, 0.2);
+            border-left: 4px solid #a78bfa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+        .info-box strong { color: #a78bfa; }
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 40px;
+        }
+        .btn {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            background: rgba(147, 112, 219, 0.3);
+            color: #a78bfa;
+            border: 2px solid rgba(147, 112, 219, 0.5);
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background: rgba(147, 112, 219, 0.5);
+            transform: translateY(-3px);
+            border-color: #a78bfa;
+        }
+        .loading { text-align: center; padding: 100px 20px; }
+        .loading p { font-size: 1.5em; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="loading" class="loading">
+            <h2>🔄 Cargando Dashboard...</h2>
+            <p>Por favor espera</p>
+        </div>
+        <div id="content" style="display: none;">
+            <div class="header">
+                <h1>🔀 División del Dataset</h1>
+                <p>Configuración de train, validación y test</p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">🚂 Training</div>
+                    <div class="stat-value" id="trainSize">60%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">✔️ Validación</div>
+                    <div class="stat-value" id="valSize">20%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">🧪 Testing</div>
+                    <div class="stat-value" id="testSize">20%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">📊 Total Muestras</div>
+                    <div class="stat-value">125,973</div>
+                </div>
+            </div>
+
+            <div class="slider-box">
+                <div class="slider-label">Ajusta Training (<span id="trainLabel">60</span>%)</div>
+                <input type="range" class="slider" id="trainSlider" min="40" max="80" value="60" oninput="updateSplit()">
+                <div class="slider-label">Ajusta Validación (<span id="valLabel">20</span>%)</div>
+                <input type="range" class="slider" id="valSlider" min="10" max="40" value="20" oninput="updateSplit()">
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-box">
+                    <div class="chart-title">📊 División Actual</div>
+                    <div class="chart-canvas"><canvas id="chart1"></canvas></div>
+                </div>
+                <div class="chart-box">
+                    <div class="chart-title">🎯 Distribución por Clase</div>
+                    <div class="chart-canvas"><canvas id="chart2"></canvas></div>
+                </div>
+                <div class="chart-box">
+                    <div class="chart-title">📈 Muestras Distribuidas</div>
+                    <div class="chart-canvas"><canvas id="chart3"></canvas></div>
+                </div>
+                <div class="chart-box">
+                    <div class="chart-title">⚖️ Balance de Sets</div>
+                    <div class="chart-canvas"><canvas id="chart4"></canvas></div>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <strong>ℹ️ División Estratificada:</strong> Se utiliza división estratificada para mantener la proporción de clases en cada conjunto. Training: 75,584 muestras, Validación: 25,195 muestras, Test: 25,194 muestras.
+            </div>
+            <div class="controls">
+                <button class="btn">🔀 División Aleatoria</button>
+                <button class="btn">⚖️ División Estratificada</button>
+                <button class="btn">💾 Guardar División</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        let charts = {};
+        setTimeout(() => {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+            initCharts();
+        }, 800);
+
+        function updateSplit() {
+            // Obtener valores de los sliders
+            const trainSlider = document.getElementById('trainSlider');
+            const valSlider = document.getElementById('valSlider');
+            
+            let train = parseInt(trainSlider.value);
+            let val = parseInt(valSlider.value);
+            let test = 100 - train - val;
+            
+            // Validar que test no sea negativo
+            if (test < 0) {
+                test = 0;
+                val = 100 - train;
+                valSlider.value = val;
+            }
+            
+            // Actualizar las etiquetas de los sliders
+            document.getElementById('trainLabel').textContent = train;
+            document.getElementById('valLabel').textContent = val;
+            
+            // Actualizar los stat cards
+            document.getElementById('trainSize').textContent = train + '%';
+            document.getElementById('valSize').textContent = val + '%';
+            document.getElementById('testSize').textContent = test + '%';
+            
+            // Actualizar el gráfico
+            if (charts.split) {
+                charts.split.data.labels = [`Training (${train}%)`, `Validación (${val}%)`, `Test (${test}%)`];
+                charts.split.data.datasets[0].data = [train, val, test];
+                charts.split.update();
+            }
+            
+            // Calcular y actualizar muestras
+            const totalMuestras = 125973;
+            const trainMuestras = Math.round(totalMuestras * train / 100);
+            const valMuestras = Math.round(totalMuestras * val / 100);
+            const testMuestras = totalMuestras - trainMuestras - valMuestras;
+            
+            if (charts.chart3) {
+                charts.chart3.data.datasets[0].data = [trainMuestras, valMuestras, testMuestras];
+                charts.chart3.update();
+            }
+        }
+
+        function initCharts() {
+            charts.split = new Chart(document.getElementById('chart1'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Training (60%)', 'Validación (20%)', 'Test (20%)'],
+                    datasets: [{
+                        data: [60, 20, 20],
+                        backgroundColor: ['rgba(167, 139, 250, 0.7)', 'rgba(236, 72, 153, 0.7)', 'rgba(59, 130, 246, 0.7)'],
+                        borderWidth: 2,
+                        borderColor: 'rgba(30, 27, 75, 0.5)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#fff' } } }
+                }
+            });
+
+            new Chart(document.getElementById('chart2'), {
+                type: 'bar',
+                data: {
+                    labels: ['Normal', 'DoS', 'Probe', 'R2L', 'U2R'],
+                    datasets: [
+                        {
+                            label: 'Training',
+                            data: [40000, 15300, 9000, 6000, 5284],
+                            backgroundColor: 'rgba(167, 139, 250, 0.7)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Validación',
+                            data: [13343, 5100, 3000, 2000, 1752],
+                            backgroundColor: 'rgba(236, 72, 153, 0.7)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Test',
+                            data: [13343, 5100, 3000, 2000, 1751],
+                            backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(167, 139, 250, 0.1)' }, ticks: { color: '#a78bfa' } },
+                        x: { ticks: { color: '#a78bfa' } }
+                    },
+                    plugins: { legend: { labels: { color: '#fff' } } }
+                }
+            });
+
+            new Chart(document.getElementById('chart3'), {
+                type: 'bar',
+                data: {
+                    labels: ['Training', 'Validación', 'Test'],
+                    datasets: [{
+                        label: 'Cantidad de Muestras',
+                        data: [75584, 25195, 25194],
+                        backgroundColor: ['rgba(167, 139, 250, 0.7)', 'rgba(236, 72, 153, 0.7)', 'rgba(59, 130, 246, 0.7)'],
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(167, 139, 250, 0.1)' }, ticks: { color: '#a78bfa' } },
+                        x: { ticks: { color: '#a78bfa' } }
+                    },
+                    plugins: { legend: { labels: { color: '#fff' } } }
+                }
+            });
+
+            new Chart(document.getElementById('chart4'), {
+                type: 'radar',
+                data: {
+                    labels: ['Precisión', 'Recall', 'F1-Score', 'Balance', 'Representatividad'],
+                    datasets: [
+                        {
+                            label: 'División Aleatoria',
+                            data: [95, 93, 94, 88, 90],
+                            borderColor: 'rgba(167, 139, 250, 0.8)',
+                            backgroundColor: 'rgba(167, 139, 250, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 4
+                        },
+                        {
+                            label: 'División Estratificada',
+                            data: [98, 97, 98, 99, 98],
+                            borderColor: 'rgba(236, 72, 153, 0.8)',
+                            backgroundColor: 'rgba(236, 72, 153, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { color: '#a78bfa' },
+                            pointLabels: { color: '#a78bfa' }
+                        }
+                    },
+                    plugins: { legend: { labels: { color: '#fff' } } }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

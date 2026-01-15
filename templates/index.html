@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard ML - NSL-KDD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1e1b4b 0%, #2d1b69 50%, #3f2c70 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 40px 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(147, 112, 219, 0.3);
+            border-radius: 20px;
+            padding: 60px;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+        .header h1 { font-size: 4em; margin-bottom: 15px; font-weight: 900; }
+        .header p { font-size: 1.4em; opacity: 0.8; margin-bottom: 30px; }
+        .btn-main {
+            padding: 18px 50px;
+            font-size: 1.2em;
+            font-weight: 700;
+            background: rgba(147, 112, 219, 0.4);
+            color: #a78bfa;
+            border: 2px solid rgba(147, 112, 219, 0.6);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-main:hover {
+            background: rgba(147, 112, 219, 0.6);
+            transform: translateY(-3px);
+            border-color: #a78bfa;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(147, 112, 219, 0.3);
+            border-radius: 15px;
+            padding: 35px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .card:hover {
+            background: rgba(147, 112, 219, 0.2);
+            border-color: rgba(147, 112, 219, 0.6);
+            transform: translateY(-8px);
+        }
+        .card h3 { font-size: 1.6em; margin-bottom: 12px; color: #a78bfa; }
+        .card p { font-size: 1em; opacity: 0.8; line-height: 1.6; }
+        .icon { font-size: 3em; margin-bottom: 15px; display: block; }
+        .loading { text-align: center; padding: 100px 20px; }
+        .loading p { font-size: 1.5em; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="loading" class="loading">
+            <h2>🔄 Cargando Portal...</h2>
+            <p>Por favor espera</p>
+        </div>
+        <div id="content" style="display: none;">
+            <div class="header">
+                <h1>🚀 Dashboard ML NSL-KDD</h1>
+                <p>Análisis completo de Detección de Intrusiones en Redes</p>
+                <button class="btn-main" onclick="window.location.href='/loader'">📂 Cargar Notebooks</button>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <span class="icon">🎯</span>
+                    <h3>Regresión Logística</h3>
+                    <p>Modelo de clasificación binaria para detección de ataques. Precisión 97.8% en el dataset NSL-KDD.</p>
+                </div>
+                
+                <div class="card">
+                    <span class="icon">📊</span>
+                    <h3>Visualización Dataset</h3>
+                    <p>Análisis exploratorio de 125,973 muestras con 42 atributos. Distribución de clases y patrones de datos.</p>
+                </div>
+                
+                <div class="card">
+                    <span class="icon">🔀</span>
+                    <h3>División del Dataset</h3>
+                    <p>Configuración estratificada de conjuntos training, validación y test. División 60/20/20 balanceada.</p>
+                </div>
+                
+                <div class="card">
+                    <span class="icon">🔧</span>
+                    <h3>Preparación del Dataset</h3>
+                    <p>Limpieza de nulos, encoding categórico y escalado robusto. 74,742 muestras limpias procesadas.</p>
+                </div>
+                
+                <div class="card">
+                    <span class="icon">⚙️</span>
+                    <h3>Pipelines Personalizados</h3>
+                    <p>Construcción de pipelines con transformadores custom. Integración completa del flujo de preprocesamiento.</p>
+                </div>
+                
+                <div class="card">
+                    <span class="icon">📈</span>
+                    <h3>Evaluación de Resultados</h3>
+                    <p>Métricas de rendimiento: Precision, Recall, F1-Score, AUC-ROC. Análisis completo del modelo.</p>
+                </div>
+            </div>
+
+            <div style="background: rgba(147, 112, 219, 0.2); border-left: 4px solid #a78bfa; border-radius: 10px; padding: 30px; font-size: 1.1em; line-height: 1.8;">
+                <strong style="color: #a78bfa; font-size: 1.2em;">📚 Dataset NSL-KDD</strong>
+                <p style="margin-top: 15px;">Base de datos de detección de intrusiones en redes con 125,973 registros. Contiene 42 características descriptivas de tráfico de red, incluyendo protocolo, servicio, bytes transmitidos, etc. Clasificación en 5 categorías: Normal, DoS, Probe, R2L y U2R.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        setTimeout(() => {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+        }, 800);
+    </script>
+</body>
+</html>

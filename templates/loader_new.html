@@ -55,11 +55,11 @@
                                 value="{{ last_path }}"
                             >
                         </div>
-                        <button class="scan-btn" id="scanBtn" onclick="testClick(); return false;">
+                        <button class="scan-btn" id="scanBtn">
                             <span class="btn-icon">🔍</span>
                             <span class="btn-text">Buscar Notebooks</span>
                         </button>
-                        <button class="scan-btn test-btn" id="testBtn" onclick="alert('FUNCIONA!'); return false;">
+                        <button class="scan-btn test-btn" id="testBtn">
                             <span class="btn-icon">🧪</span>
                             <span class="btn-text">Test</span>
                         </button>
@@ -99,13 +99,6 @@
     </div>
 
     <script>
-        // Función de test inline
-        function testClick() {
-            alert('✅ Click detectado! El botón SÍ funciona.');
-            console.log('🔘 testClick() ejecutado');
-            scanFolder();
-        }
-        
         console.log('✅ Script cargado');
         
         // TEST: Verificar que el DOM está listo

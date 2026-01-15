@@ -32,7 +32,8 @@ def loader_view(request):
     from django.middleware.csrf import get_token
     get_token(request)
     
-    return render(request, 'loader.html', {'last_path': last_path})
+    # Usar versión simple sin CSS complejo
+    return render(request, 'loader_simple.html', {'last_path': last_path})
 
 
 def browse_notebooks(request):
@@ -246,12 +247,18 @@ def notebook_detail(request, slug):
     with open(json_path, 'r', encoding='utf-8') as f:
         items = json.load(f)
     
-    # Extraer estadísticas
+    # Extraer estadísticas y listas separadas
+    images = [item for item in items if item['type'] == 'image']
+    tables = [item for item in items if item['type'] == 'table']
+    outputs = [item for item in items if item['type'] == 'output']
+    
     stats = {
         'total': len(items),
-        'images': sum(1 for item in items if item['type'] == 'image'),
-        'tables': sum(1 for item in items if item['type'] == 'table'),
-        'outputs': sum(1 for item in items if item['type'] == 'output'),
+        'images': len(images),
+        'tables': len(tables),
+        'outputs': len(outputs),
+        'total_cells': len(items),
+        'code_cells': sum(1 for item in items if item.get('type') == 'code')
     }
     
     # Extraer título del primer markdown
@@ -267,10 +274,37 @@ def notebook_detail(request, slug):
                 description = content[:300]
             break
     
-    return render(request, 'notebook_detail.html', {
+    # Detectar si es el notebook de Regresión Logística
+    if '05_Regrecion_Loguistica' in slug or 'regresion' in slug.lower():
+        return render(request, 'regresion_logistica_interactive.html')
+    
+    # Detectar si es el notebook de Visualización de DataSet
+    if '06_Visualizacion_DtaSet' in slug or 'visualizacion' in slug.lower():
+        return render(request, 'visualizacion_dataset_interactive.html')
+    
+    # Detectar si es el notebook de División del DataSet
+    if '07_Divicion_del_DataSet' in slug or 'divicion' in slug.lower() or 'division' in slug.lower():
+        return render(request, 'division_dataset_interactive.html')
+    
+    # Detectar si es el notebook de Preparación del DataSet
+    if '08_Preparacion_del_DataSet' in slug or 'preparacion' in slug.lower():
+        return render(request, 'preparacion_dataset_interactive.html')
+    
+    # Detectar si es el notebook de Transformadores y Pipelines Personalizados
+    if '09_Creacion-de-Transformadores-y-Pipeline-Personalizados' in slug or 'transformadores' in slug.lower() or 'pipelines' in slug.lower() or 'creacion' in slug.lower():
+        return render(request, 'pipelines_transformadores_interactive.html')
+    
+    # Detectar si es el notebook de Evaluación de Resultados
+    if '10_Evalucion-de-Resultados' in slug or 'evaluacion' in slug.lower() or 'evalucion' in slug.lower():
+        return render(request, 'evaluacion_resultados_interactive.html')
+    
+    return render(request, 'notebook_detail_interactive.html', {
         'slug': slug,
         'title': title,
         'description': description,
         'items': items,
-        'stats': stats
+        'stats': stats,
+        'images': images,
+        'tables': tables,
+        'outputs': outputs
     })
