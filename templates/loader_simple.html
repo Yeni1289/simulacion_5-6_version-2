@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notebook Viewer - Simple</title>
+    <title>SIMULACION</title>
     <style>
         * {
             margin: 0;
@@ -280,7 +280,7 @@
 <body>
     <div class="container">
         <div class="header-section">
-            <h1>📊 Notebook Viewer</h1>
+            <h1>📊 Dataset de Simulacion I</h1>
             <p class="description">Sistema de visualización interactiva para análisis de Machine Learning</p>
         </div>
 
@@ -352,7 +352,7 @@
         async function procesarArchivos(files) {
             const resultDiv = document.getElementById('result');
             resultDiv.style.display = 'block';
-            resultDiv.innerHTML = '<div class="loading-message">⏳ Procesando notebooks...</div>';
+            resultDiv.innerHTML = '<div class="loading-message">⏳ Procesando archivos...</div>';
 
             try {
                 let html = `<h3 class="result-header">✅ ${files.length} notebook${files.length > 1 ? 's' : ''} cargado${files.length > 1 ? 's' : ''}:</h3><div class="notebook-list">`;
@@ -412,7 +412,7 @@
             
             const resultDiv = document.getElementById('result');
             resultDiv.style.display = 'block';
-            resultDiv.innerHTML = '<div class="loading-message">⏳ Buscando notebooks...</div>';
+            resultDiv.innerHTML = '<div class="loading-message">⏳ Buscando archivos...</div>';
             
             try {
                 const formData = new FormData();
@@ -431,7 +431,7 @@
                 console.log('📊 Datos:', data);
                 
                 if (data.success && data.notebooks.length > 0) {
-                    let html = `<h3 class="result-header">✅ ${data.notebooks.length} notebooks encontrados:</h3><div class="notebook-list">`;
+                    let html = `<h3 class="result-header">✅ ${data.notebooks.length} archivos encontrados:</h3><div class="notebook-list">`;
                     
                     data.notebooks.forEach(nb => {
                         html += `
